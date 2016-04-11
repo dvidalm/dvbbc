@@ -154,6 +154,7 @@ def dtvmode(mode):
     """ Set digital TV mode for device """
     with Popen(['/opt/bin/mediaclient', '-D', mode], stdout=PIPE) as proc:
         if proc.wait()==0:
+            print(proc.communicate()[0])
             return True
         else:
             return False
