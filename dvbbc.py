@@ -6,12 +6,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or (at
 # your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -21,10 +21,7 @@ from urllib.parse import quote as urlenc, unquote as urldec
 from wsgiref.simple_server import make_server, WSGIServer
 from wsgiref.validate import validator
 from xml.sax.saxutils import escape
-import os
-import sys
-import threading
-import time
+import os,sys,threading,time,argparse
 
 HTMLENC = {'"': '&quot;', "'": '&apos'}
 htmlenc = lambda c: escape(c, HTMLENC)
@@ -146,7 +143,7 @@ def simple_app(environ, start_response):
       start_response('200 OK', [('Content-type', 'video/MP2T')])
       cur_chan = ch
       return streamer()
-    else: 
+    else:
       start_response('404 Not found', [('Content-type', 'text/plain')])
       return [("Invalid channel '%s'" % ch).encode('utf8')]
   else:
@@ -156,6 +153,14 @@ def simple_app(environ, start_response):
 def main():
   """Run the show"""
   global cur_chan
+
+  #Arguments parser
+  parser = argparse.ArgumentParser(description="Stream live TV over HTTP to multiple viewers, using Sundtek as capture card")
+  parser.add_argument("-p","--port",type=int,default=2000,help="server port")
+  parser.add_argument("-D", "--setdtvmode",type=str,choices=["DVBT", "DVBC", "ATSC","ISDBT"],default="ISDBT",help="set digital TV mode for device")
+  args=parser.parse_args()
+
+  #Get channels from file
   channels.update(set(
     l.split(':')[0] for l in open(CHAN_PATH, 'r')
   ))
@@ -167,7 +172,7 @@ def main():
 
   validator_app = validator(simple_app)
   httpd = make_server(
-    '', 80, validator_app,
+    '', args.port, validator_app,
     server_class=ThreadedWSGIServer
   )
   try:
