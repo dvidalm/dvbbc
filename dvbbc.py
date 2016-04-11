@@ -150,6 +150,11 @@ def simple_app(environ, start_response):
     start_response('404 Not found', [('Content-type', 'text/plain')])
     return ["Page not found".encode('utf8')]
 
+def dtvmode(mode):
+    """ Set digital TV mode for device """
+    with Popen(['/opt/bin/mediaclient', '-D', mode], stdout=PIPE) as proc:
+        print(proc.wait())
+
 def main():
   """Run the show"""
   global cur_chan
@@ -157,8 +162,10 @@ def main():
   #Arguments parser
   parser = argparse.ArgumentParser(description="Stream live TV over HTTP to multiple viewers, using Sundtek as capture card")
   parser.add_argument("-p","--port",type=int,default=2000,help="server port")
-  parser.add_argument("-D", "--setdtvmode",type=str,choices=["DVBT", "DVBC", "ATSC","ISDBT"],default="ISDBT",help="set digital TV mode for device")
+  parser.add_argument("-D", "--dtvmode",type=str,choices=["DVBT", "DVBC", "ATSC","ISDBT"],default="ISDBT",help="set digital TV mode for device")
   args=parser.parse_args()
+
+  dtvmode(args.dtvmode)
 
   #Get channels from file
   channels.update(set(
