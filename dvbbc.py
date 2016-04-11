@@ -153,7 +153,11 @@ def simple_app(environ, start_response):
 def dtvmode(mode):
     """ Set digital TV mode for device """
     with Popen(['/opt/bin/mediaclient', '-D', mode], stdout=PIPE) as proc:
-        print(proc.wait())
+        if proc.wait()==0:
+            return True
+        else:
+            return False
+
 
 def main():
   """Run the show"""
@@ -165,28 +169,31 @@ def main():
   parser.add_argument("-D", "--dtvmode",type=str,choices=["DVBT", "DVBC", "ATSC","ISDBT"],default="ISDBT",help="set digital TV mode for device")
   args=parser.parse_args()
 
-  dtvmode(args.dtvmode)
+  #Setting dtv mode using mediaclient
+  if dtvmode(args.dtvmode):
 
-  #Get channels from file
-  channels.update(set(
-    l.split(':')[0] for l in open(CHAN_PATH, 'r')
-  ))
-  cur_chan = list(channels)[0]
+      #Get channels from file
+      channels.update(set(
+        l.split(':')[0] for l in open(CHAN_PATH, 'r')
+      ))
+      cur_chan = list(channels)[0]
 
-  feed_thread = threading.Thread(target=feeder)
-  feed_thread.daemon = True
-  feed_thread.start()
+      feed_thread = threading.Thread(target=feeder)
+      feed_thread.daemon = True
+      feed_thread.start()
 
-  validator_app = validator(simple_app)
-  httpd = make_server(
-    '', args.port, validator_app,
-    server_class=ThreadedWSGIServer
-  )
-  try:
-    httpd.serve_forever()
-  finally:
-    cur_chan = None
-    feed_thread.join()
+      validator_app = validator(simple_app)
+      httpd = make_server(
+        '', args.port, validator_app,
+        server_class=ThreadedWSGIServer
+      )
+      try:
+        httpd.serve_forever()
+      finally:
+        cur_chan = None
+        feed_thread.join()
+  else:
+        print("Error setting the dtv mode")
 
 if __name__ == '__main__':
   main()
