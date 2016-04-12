@@ -7,20 +7,21 @@ simple as a design one can get.
 Setup
 =====
 
- 1. Install `dvb-apps` and `ffmpeg` for your distribution
+ 1. Install Sundtek drivers. Follow the instructions [here](http://support.sundtek.com/index.php/topic,4.0.html)
 
- 2. [Scan and setup all your channels][scan] using `scan`
+ 2. Install `dvb-apps` and `ffmpeg` for your distribution
 
- 3. Copy the channel configuration to `.tzap/channels.conf`
+ 3. [Scan and setup all your channels][scan] using `scan`
 
- 4. Run `python3 dvbbc.py` and visit `http://localhost/`
+ 4. Copy the channel configuration to `.tzap/channels.conf`
+
 
 Usage
 =====
 
  1. Run `python3 dvbbc.py`
  2. Select channel
- 3. Visit `http://localhost/stream` or use vlc to see the streaming
+ 3. Visit `http://localhost/stream` or use vlc to see the streaming video
 
 
 Options
