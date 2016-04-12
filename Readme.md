@@ -1,7 +1,7 @@
 Introduction
 ============
 
-_dvbbc_ allows streaming live TV over HTTP to multiple viewers. It is as
+_dvbbc_ allows streaming live TV over HTTP to multiple viewers, using Sundtek TV capturer. It is as
 simple as a design one can get.
 
 Setup
@@ -14,6 +14,20 @@ Setup
  3. Copy the channel configuration to `.tzap/channels.conf`
 
  4. Run `python3 dvbbc.py` and visit `http://localhost/`
+
+Usage
+=====
+
+ 1. Run `python3 dvbbc.py`
+ 2. Select channel
+ 3. Visit `http://localhost/stream` or use vlc to see the streaming
+
+
+Options
+=====
+
+```-p, --port``` : Server port.<br/>
+```-D {DVBT,DVBC,ATSC,ISDBT}, --dtvmode {DVBT,DVBC,ATSC,ISDBT}``` : Set digital TV mode for device.<br/>
 
 Notes
 =====
