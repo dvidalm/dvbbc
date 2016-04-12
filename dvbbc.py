@@ -126,29 +126,32 @@ def feeder():
 def simple_app(environ, start_response):
   """A simple WSGI app"""
   global cur_chan
-  if environ['PATH_INFO'] == '/':
-    start_response('200 OK', [('Content-type', 'text/html')])
-    chans = '\n'.join(
-      '<li><a href="/chan/%s">%s</a></li>' % (urlenc(c), htmlenc(c))
-      for c in sorted(channels)
-    )
-    return [(CHANS_TPL % (htmlenc(cur_chan), cur_users, chans))
-            .encode('utf8')]
-  elif environ['PATH_INFO'] == '/cur':
-    start_response('200 OK', [('Content-type', 'video/MP2T')])
-    return streamer()
-  elif environ['PATH_INFO'].startswith('/chan/'):
-    ch = urldec(environ['PATH_INFO'][len('/chan/'):])
-    if ch in channels:
-      start_response('200 OK', [('Content-type', 'video/MP2T')])
-      cur_chan = ch
-      return streamer()
-    else:
-      start_response('404 Not found', [('Content-type', 'text/plain')])
-      return [("Invalid channel '%s'" % ch).encode('utf8')]
-  else:
-    start_response('404 Not found', [('Content-type', 'text/plain')])
-    return ["Page not found".encode('utf8')]
+  try:
+      if environ['PATH_INFO'] == '/':
+        start_response('200 OK', [('Content-type', 'text/html')])
+        chans = '\n'.join(
+          '<li><a href="/chan/%s">%s</a></li>' % (urlenc(c), htmlenc(c))
+          for c in sorted(channels)
+        )
+        return [(CHANS_TPL % (htmlenc(cur_chan), cur_users, chans))
+                .encode('utf8')]
+      elif environ['PATH_INFO'] == '/cur':
+        start_response('200 OK', [('Content-type', 'video/MP2T')])
+        return streamer()
+      elif environ['PATH_INFO'].startswith('/chan/'):
+        ch = urldec(environ['PATH_INFO'][len('/chan/'):])
+        if ch in channels:
+          start_response('200 OK', [('Content-type', 'video/MP2T')])
+          cur_chan = ch
+          return streamer()
+        else:
+          start_response('404 Not found', [('Content-type', 'text/plain')])
+          return [("Invalid channel '%s'" % ch).encode('utf8')]
+      else:
+        start_response('404 Not found', [('Content-type', 'text/plain')])
+        return ["Page not found".encode('utf8')]
+    except:
+        print("lala")
 
 def dtvmode(mode):
     """ Set digital TV mode for device """

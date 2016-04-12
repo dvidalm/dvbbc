@@ -13,7 +13,7 @@ Setup
 
  3. Copy the channel configuration to `.tzap/channels.conf`
 
- 4. Run `dvbbc` and visit `http://localhost/`
+ 4. Run `python3 dvbbc.py` and visit `http://localhost/`
 
 Notes
 =====
