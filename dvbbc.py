@@ -22,7 +22,10 @@ from wsgiref.simple_server import make_server, WSGIServer
 from wsgiref.validate import validator
 from xml.sax.saxutils import escape
 import os,sys,threading,time,argparse
+import socket
 
+
+LOCAL_IP = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
 HTMLENC = {'"': '&quot;', "'": '&apos'}
 htmlenc = lambda c: escape(c, HTMLENC)
 
@@ -55,11 +58,8 @@ class Server():
         self.chans_tpl = """<!DOCTYPE html><html><body><h1>Channels</h1>
         <p>Watch the <a href="/cur">current channel</a> (%s) - %d viewers.</p>
         <ul>%s</ul></body></html>"""
-        self.channels = set()
-        self.channels.update(set(
-          l.split(':')[0] for l in open(self.chan_path, 'r')
-        ))
-        self.cur_chan = list(self.channels)[0]
+        self.channels = list(l.split(':')[0] for l in open(self.chan_path, 'r'))
+        self.cur_chan = self.channels[0]
 
 
     def hard_read(self,s,l):
@@ -117,8 +117,7 @@ class Server():
         while self.cur_chan:
           if ((p1 and p1.poll() is not None)
               or (p2 and p2.poll() is not None)):
-            print("dvbbc: gnutv.ret == %r, ffmpeg.ret == %r" % (
-              p1.returncode, p2.returncode), file=sys.stderr)
+            print("dvbbc: gnutv.ret == %r, ffmpeg.ret == %r" % (p1.returncode, p2.returncode), file=sys.stderr)
             old_chan = None
           if self.cur_chan and old_chan != self.cur_chan:
             old_chan = self.cur_chan
@@ -128,7 +127,7 @@ class Server():
               'gnutv', '-channels', self.chan_path, '-out', 'stdout', self.cur_chan
             ], stdout=PIPE)
             p2 = Popen([
-              'ffmpeg', '-loglevel', 'fatal', '-i','-', '-acodec', 'copy',
+              'avconv', '-loglevel', 'fatal', '-i','-', '-acodec', 'copy',
               '-vcodec', 'copy', '-scodec', 'copy', '-f', 'mpegts', '-'
             ], stdout=PIPE, stdin=p1.stdout, bufsize=1, close_fds=True)
             p1.stdout.close()
@@ -188,24 +187,25 @@ def main():
     #Setting dtv mode using mediaclient
     if dtvmode(args.dtvmode):
 
-      server = Server()
-      #Select channel
-      channel = select_channel(list(server.channels))
-      server.set_channel(channel)
+          server = Server()
+          #Select channel
+          channel = select_channel(server.channels)
+          server.set_channel(channel)
 
-      feed_thread = threading.Thread(target=server.feeder)
-      feed_thread.daemon = True
-      feed_thread.start()
+          feed_thread = threading.Thread(target=server.feeder)
+          feed_thread.daemon = True
+          feed_thread.start()
 
-      validator_app = validator(server.simple_app)
-      httpd = make_server('', args.port, validator_app,server_class=ThreadedWSGIServer)
-      try:
-        httpd.serve_forever()
-      finally:
-        server.cur_chan = None
-        feed_thread.join()
+          validator_app = validator(server.simple_app)
+          httpd = make_server('', args.port, validator_app,server_class=ThreadedWSGIServer)
+          try:
+              print("URL: http://%s:%s/stream" % (LOCAL_IP,args.port))
+              httpd.serve_forever()
+          finally:
+              server.cur_chan = None
+              feed_thread.join()
     else:
-        print("Error setting the dtv mode")
+          print("Error setting the dtv mode")
 
 if __name__ == '__main__':
     main()
