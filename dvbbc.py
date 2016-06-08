@@ -163,13 +163,16 @@ def dtvmode(mode):
             return False
 
 
-def select_channel(channels):
-    print("Choose a channel:")
-    count = 1
-    for channel in channels:
-        print(str(count)+". "+channel)
-        count +=1
-    ch=int(input())
+def select_channel(channels, value):
+    if value==0:
+        print("Choose a channel:")
+        count = 1
+        for channel in channels:
+            print(str(count)+". "+channel)
+            count +=1
+        ch=int(input())
+    else:
+        ch = value
     return channels[ch-1]
 
 
@@ -190,10 +193,9 @@ def main():
 
           server = Server()
           #Select channel
-          if args.channel == 0:
-              channel = select_channel(server.channels)
-          else:
-              channel=args.channel
+
+          channel = select_channel(server.channels,int(args.channel))
+          print("Channel selected:"+channel)
           server.set_channel(channel)
 
           feed_thread = threading.Thread(target=server.feeder)
