@@ -25,7 +25,7 @@ import os,sys,threading,time,argparse
 import socket
 
 
-LOCAL_IP = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
+# LOCAL_IP = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
 HTMLENC = {'"': '&quot;', "'": '&apos'}
 htmlenc = lambda c: escape(c, HTMLENC)
 
@@ -205,7 +205,7 @@ def main():
           validator_app = validator(server.simple_app)
           httpd = make_server('', args.port, validator_app,server_class=ThreadedWSGIServer)
           try:
-              print("URL: http://%s:%s/stream" % (LOCAL_IP,args.port))
+            #   print("URL: http://%s:%s/stream" % (LOCAL_IP,args.port))
               httpd.serve_forever()
           finally:
               server.cur_chan = None
