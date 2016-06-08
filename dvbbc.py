@@ -181,6 +181,7 @@ def main():
     #Arguments parser
     parser = argparse.ArgumentParser(description="Stream live TV over HTTP to multiple viewers, using Sundtek as capture card")
     parser.add_argument("-p","--port",type=int,default=2000,help="server port")
+    parser.add_argument("-c", "--channel",type=str,default=0,help="set channel")
     parser.add_argument("-D", "--dtvmode",type=str,choices=["DVBT", "DVBC", "ATSC","ISDBT"],default="ISDBT",help="set digital TV mode for device")
     args=parser.parse_args()
 
@@ -189,7 +190,10 @@ def main():
 
           server = Server()
           #Select channel
-          channel = select_channel(server.channels)
+          if args.channel == 0:
+              channel = select_channel(server.channels)
+          else:
+              channel=args.channel
           server.set_channel(channel)
 
           feed_thread = threading.Thread(target=server.feeder)
