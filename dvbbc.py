@@ -49,7 +49,7 @@ class ThreadedWSGIServer(ThreadingMixIn, WSGIServer):
 class Server():
 
     def __init__(self):
-        self.chan_path = os.path.expanduser('~/.tzap/channels.conf')
+        self.chan_path = os.path.expanduser('channels.conf')
         self.feed_buffer = [None] * 200 # ring buffer with multiple lockless readers
         self.feed_head = 0
         self.cur_users = 0

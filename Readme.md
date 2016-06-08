@@ -13,7 +13,7 @@ Setup
 
  3. [Scan and setup all your channels][scan] using `scan`
 
- 4. Copy the channel configuration to `.tzap/channels.conf`
+ 4. Change the `channels.conf` file with your scan file, or use the default with chilean frequencies.
 
 
 Usage
