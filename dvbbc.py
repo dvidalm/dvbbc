@@ -182,7 +182,6 @@ def select_channel(channels, value):
 
 def main():
     """Run the show"""
-    time.sleep(30) # delays for 5 seconds
     #Arguments parser
     parser = argparse.ArgumentParser(description="Stream live TV over HTTP to multiple viewers, using Sundtek as capture card")
     parser.add_argument("-p","--port",type=int,default=2000,help="server port")
