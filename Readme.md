@@ -9,7 +9,7 @@ Setup
 
  1. Install Sundtek drivers. Follow the instructions [here](http://support.sundtek.com/index.php/topic,4.0.html)
 
- 2. Install `dvb-apps` and `avconv` for your distribution
+ 2. Install `dvb-apps` and `libav-tools` for your distribution
 
  3. [Scan and setup all your channels][scan] using `scan`
 
