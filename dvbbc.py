@@ -130,7 +130,7 @@ class Server():
             ], stdout=PIPE)
             p2 = Popen([
               'avconv', '-loglevel', 'fatal', '-i','-', '-acodec', 'copy',
-              '-vcodec', 'copy', '-scodec', 'copy', '-f', 'mpegts', '-'
+              '-vcodec', 'copy', '-scodec', 'copy','-s','1280x720','-f', 'mpegts', '-'
             ], stdout=PIPE, stdin=p1.stdout, bufsize=1, close_fds=True)
             p1.stdout.close()
             thread = threading.Thread(target=self.reader, args=(p2.stdout,))
